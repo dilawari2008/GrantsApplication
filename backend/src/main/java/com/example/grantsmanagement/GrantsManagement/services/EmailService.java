@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,8 +29,8 @@ public class EmailService {
     @Autowired
     private FoundationService foundationService;
 
-    public ResponseEntity<List<Email>> getAllEmailsForSelectedNonProfits (GetEmailsDto getEmailsDto) {
-        List<Email> emails = emailRepository.findAllEmailsByFoundationIdNonProfitIds(getEmailsDto.getFoundationId(), getEmailsDto.getNonProfitEmails());
+    public ResponseEntity<List<Email>> getAllEmailsForSelectedNonProfits (Long foundationId) {
+        List<Email> emails = emailRepository.findAllEmailsByFoundationIdNonProfitIds(foundationId, new ArrayList<>());
         return ResponseEntity.ok(emails);
     }
 
