@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ import java.util.List;
 
 @Service
 public class EmailService {
+
+    private Integer MAX_BATCH_SIZE = 10;
 
     private static Logger log = LoggerFactory.getLogger(FoundationService.class);
 
@@ -37,7 +40,10 @@ public class EmailService {
         return ResponseEntity.ok(emails);
     }
 
-    public void sendMoneyToMultipleNonProfits (List<Long> nonProfitIds, Long foundationId) {
+    public void sendMoneyToMultipleNonProfits (List<Long> nonProfitIds, Long foundationId) throws Exception {
+        if (nonProfitIds != null && nonProfitIds.size() > MAX_BATCH_SIZE) {
+            throw new Exception(String.format("Max Batch Size is %s", MAX_BATCH_SIZE));
+        }
         List<NonProfit> nonProfits = nonProfitService.getNonProfitsByNonProfitIds(nonProfitIds);
         Foundation foundation = foundationService.getFoundationById(foundationId);
         bulkEmailHandler(nonProfits, foundation);

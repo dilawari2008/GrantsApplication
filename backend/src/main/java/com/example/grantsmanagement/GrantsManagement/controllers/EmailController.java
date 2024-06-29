@@ -24,7 +24,7 @@ public class EmailController {
     }
 
     @PostMapping("/")
-    public ResponseEntity sendMoneyToMultipleNonProfits (@RequestBody EmailDto emailDto) {
+    public ResponseEntity sendMoneyToMultipleNonProfits (@RequestBody EmailDto emailDto) throws Exception {
         emailService.sendMoneyToMultipleNonProfits(emailDto.getNonprofitIds(), emailDto.getFoundationId());
         return ResponseEntity.ok("Initated emails sending, view dashboard for details.");
     }
