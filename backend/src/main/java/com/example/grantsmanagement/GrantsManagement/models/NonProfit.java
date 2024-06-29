@@ -13,20 +13,23 @@ public class NonProfit {
     private String email;
     private Long foundationId;
     private Date createdAt;
+    private String template;
 
-    public NonProfit(String name, String address, String email, Long foundationId, Date createdAt) {
+    public NonProfit(String name, String address, String email, Long foundationId, Date createdAt, String template) {
         this.name = name;
         this.address = address;
         this.email = email;
         this.foundationId = foundationId;
         this.createdAt = createdAt;
-    }
-
-    public NonProfit() {
+        this.template = template;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -67,5 +70,13 @@ public class NonProfit {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(String template) {
+        this.template = template;
     }
 }

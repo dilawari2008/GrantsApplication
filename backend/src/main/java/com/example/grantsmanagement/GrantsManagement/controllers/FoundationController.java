@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/app")
+@RequestMapping("/app/foundations")
 public class FoundationController {
     @Autowired
     private FoundationService foundationService;
 
-    @PostMapping("/foundations")
+    @PostMapping("/")
     public ResponseEntity<Long> createFoundation(@RequestBody CreateFoundationDto createFoundationDto){
         return foundationService.createFoundation(createFoundationDto);
     }

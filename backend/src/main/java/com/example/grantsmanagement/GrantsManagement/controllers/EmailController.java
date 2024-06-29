@@ -12,18 +12,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/app")
+@RequestMapping("/app/emails")
 public class EmailController {
 
     @Autowired
     private EmailService emailService;
 
-    @GetMapping("/emails/listing/{foundationId}")
+    @GetMapping("/listing/{foundationId}")
     public ResponseEntity<List<Email>> getAllEmailsForSelectedNonProfits (@PathVariable Long foundationId) {
         return emailService.getAllEmailsForSelectedNonProfits(foundationId);
     }
 
-    @PostMapping("/emails")
+    @PostMapping("/")
     public ResponseEntity sendMoneyToMultipleNonProfits (@RequestBody EmailDto emailDto) {
         emailService.sendMoneyToMultipleNonProfits(emailDto.getNonprofitIds(), emailDto.getFoundationId());
         return ResponseEntity.ok("Initated emails sending, view dashboard for details.");

@@ -5,7 +5,6 @@ import java.util.List;
 public class EmailDto {
     private Long foundationId;
     private List<Long> nonprofitIds;
-    private String body;
 
     public Long getFoundationId() {
         return foundationId;
@@ -21,13 +20,5 @@ public class EmailDto {
 
     public void setNonprofitIds(List<Long> nonprofitIds) {
         this.nonprofitIds = nonprofitIds;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
     }
 }

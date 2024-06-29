@@ -1,5 +1,6 @@
 package com.example.grantsmanagement.GrantsManagement.controllers;
 
+import com.example.grantsmanagement.GrantsManagement.dto.FoundationDetailsDto;
 import com.example.grantsmanagement.GrantsManagement.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/users/{username}")
-    public ResponseEntity<Long> getFoundationIdByUsername(@PathVariable String username){
+    public ResponseEntity<FoundationDetailsDto> getFoundationIdByUsername(@PathVariable String username){
         return userService.getFoundationIdByUsername(username);
     }
 }

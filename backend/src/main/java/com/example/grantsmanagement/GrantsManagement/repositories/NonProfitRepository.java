@@ -11,4 +11,7 @@ import java.util.List;
 public interface NonProfitRepository extends JpaRepository<NonProfit, Long> {
     @Query(value = "select c from NonProfit c where c.foundationId = ?1")
     List<NonProfit> findAllNonProfitsByFoundationId(Long foundationId);
+
+    @Query(value = "update NonProfit c set c.template = ?2 where c.id = ?1")
+    void updateTemplate(Long nonProfitId, String template);
 }

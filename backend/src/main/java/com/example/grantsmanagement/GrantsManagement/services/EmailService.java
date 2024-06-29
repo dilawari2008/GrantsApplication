@@ -1,10 +1,12 @@
 package com.example.grantsmanagement.GrantsManagement.services;
 
 import com.example.grantsmanagement.GrantsManagement.dto.GetEmailsDto;
+import com.example.grantsmanagement.GrantsManagement.dto.TemplateVariablesDto;
 import com.example.grantsmanagement.GrantsManagement.models.Email;
 import com.example.grantsmanagement.GrantsManagement.models.Foundation;
 import com.example.grantsmanagement.GrantsManagement.models.NonProfit;
 import com.example.grantsmanagement.GrantsManagement.repositories.EmailRepository;
+import com.example.grantsmanagement.GrantsManagement.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +45,9 @@ public class EmailService {
     private void bulkEmailHandler(List<NonProfit> nonProfits, Foundation foundation) {
         log.info("Initiating funds transfer for {} foundation...", foundation.getName());
         for (NonProfit nonProfit: nonProfits) {
-            String subject = String.format("Subject: Sending Money to %s", nonProfit.getName());
-            String body = String.format("Body: Sending money to nonprofit %s at address %s", nonProfit.getName(), nonProfit.getAddress());
+            TemplateVariablesDto templateVariablesDto = new TemplateVariablesDto(nonProfit.getName(),nonProfit.getAddress(),nonProfit.getEmail(), foundation.getName());
+            String subject = String.format("Sending Money to %s", nonProfit.getName());
+            String body = String.format(StringUtils.populateTemplates(nonProfit.getTemplate(), templateVariablesDto));
             log.info("Sending Email...");
             log.info(subject + "\n" + body);
             Email email = new Email(body, subject, foundation.getId(), foundation.getEmail(), nonProfit.getEmail(), nonProfit.getId(), new Date());
