@@ -18,7 +18,7 @@ public class EmailController {
     @Autowired
     private EmailService emailService;
 
-    @PostMapping("/emails/listing")
+    @GetMapping("/emails/listing")
     public ResponseEntity<List<Email>> getAllEmailsForSelectedNonProfits (@PathVariable Long foundationId) {
         return emailService.getAllEmailsForSelectedNonProfits(foundationId);
     }
