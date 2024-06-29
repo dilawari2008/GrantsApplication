@@ -2,6 +2,7 @@ package com.example.grantsmanagement.GrantsManagement.services;
 
 import com.example.grantsmanagement.GrantsManagement.dto.GetEmailsDto;
 import com.example.grantsmanagement.GrantsManagement.dto.TemplateVariablesDto;
+import com.example.grantsmanagement.GrantsManagement.enums.MailStatus;
 import com.example.grantsmanagement.GrantsManagement.models.Email;
 import com.example.grantsmanagement.GrantsManagement.models.Foundation;
 import com.example.grantsmanagement.GrantsManagement.models.NonProfit;
@@ -50,7 +51,7 @@ public class EmailService {
             String body = String.format(StringUtils.populateTemplates(nonProfit.getTemplate(), templateVariablesDto));
             log.info("Sending Email...");
             log.info(subject + "\n" + body);
-            Email email = new Email(body, subject, foundation.getId(), foundation.getEmail(), nonProfit.getEmail(), nonProfit.getId(), new Date());
+            Email email = new Email(body, subject, foundation.getId(), foundation.getEmail(), nonProfit.getEmail(), nonProfit.getId(), new Date(), MailStatus.SUCCESS);
             emailRepository.save(email);
         }
     }

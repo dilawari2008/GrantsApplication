@@ -1,5 +1,7 @@
 package com.example.grantsmanagement.GrantsManagement.models;
 
+import com.example.grantsmanagement.GrantsManagement.enums.MailStatus;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -15,8 +17,9 @@ public class Email {
     private String nonProfitEmail;
     private Long nonProfitId;
     private Date createdAt;
+    private MailStatus mailStatus;
 
-    public Email(String body, String subject, Long foundationId, String foundationEmail, String nonProfitEmail, Long nonProfitId, Date createdAt) {
+    public Email(String body, String subject, Long foundationId, String foundationEmail, String nonProfitEmail, Long nonProfitId, Date createdAt, MailStatus mailStatus) {
         this.body = body;
         this.subject = subject;
         this.foundationId = foundationId;
@@ -24,9 +27,7 @@ public class Email {
         this.nonProfitEmail = nonProfitEmail;
         this.nonProfitId = nonProfitId;
         this.createdAt = createdAt;
-    }
-
-    public Email() {
+        this.mailStatus = mailStatus;
     }
 
     public Long getId() {
@@ -87,5 +88,13 @@ public class Email {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public MailStatus getMailStatus() {
+        return mailStatus;
+    }
+
+    public void setMailStatus(MailStatus mailStatus) {
+        this.mailStatus = mailStatus;
     }
 }
