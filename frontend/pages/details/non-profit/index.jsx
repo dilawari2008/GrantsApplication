@@ -109,6 +109,18 @@ const NonProfit = () => {
     setIsModalOpen(false);
     setCurrentRecord(null);
   };
+
+  const sendEmails = async () => {
+    setIsSendEmailLoading(true);
+    console.log('selectedNonProfitIds',selectedNonProfitIds)
+    await ApiHelper.sendEmails({
+      foundationId: foundationValue?.foundationId,
+      nonprofitIds: selectedNonProfitIds,
+    });
+    setIsSendEmailLoading(false);
+  };
+
+
   return (
     <>
       {!isLoading ? (
@@ -150,8 +162,8 @@ const NonProfit = () => {
               <div> | </div>
 
               <div className="flex gap-3 px-4 ">
-                <Button className="px-10" isLoading={isSendEmailLoading} onClick={() => {}}>
-                  Send Emails
+                <Button className="px-10 min-w-[170px]" isLoading={isSendEmailLoading} onClick={() => sendEmails()} text="Send Emails">
+                  
                 </Button>
               </div>
             </div>
