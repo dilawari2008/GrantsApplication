@@ -104,11 +104,13 @@ public class EmailService {
                     // Timeout for mocking API call to mailing service
                     Thread.sleep(MAILING_TIME);
                     savedEmail.setMailStatus(MailStatus.SUCCESS);
+                    savedEmail.setCreatedAt(new Date()); // using createdAt as lastUpdatedAt
                     emailRepository.save(savedEmail);
                     log.info("SUBJECT: " + savedEmail.getSubject()+"  BODY: "+ savedEmail.getBody());
                 } catch (Exception e) {
                     log.error("Error while mailing", e);
                     savedEmail.setMailStatus(MailStatus.FAILED);
+                    savedEmail.setCreatedAt(new Date());
                     emailRepository.save(savedEmail);
                 }
             }, executor);

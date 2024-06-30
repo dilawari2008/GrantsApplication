@@ -16,6 +16,7 @@ import userState from "@/atom/userState";
 import { formatDateTime } from "@/utils";
 import ApiHelper from "@/helper/ApiHelper";
 import { useRouter } from "next/router";
+import { SlRefresh } from "react-icons/sl";
 const CustomModal = dynamic(
   async () => await import("../../../components/CustomModal"),
   {
@@ -166,9 +167,9 @@ const NonProfit = () => {
 
               <div> | </div>
 
-              <div className="flex gap-3 px-4 ">
+              <div className="flex gap-3 px-4 min-w-[170px]">
                 <Button
-                  className="px-10"
+                  className="px-4"
                   isLoading={isCreateNonProfitLoading}
                   onClick={() => router.push("/details/non-profit/create")}
                 >
@@ -182,6 +183,12 @@ const NonProfit = () => {
                 <Button className="px-10 min-w-[170px]" isLoading={isSendEmailLoading} onClick={() => sendEmails()} text={sendEmailText}>
                   
                 </Button>
+              </div>
+
+              <div> | </div>
+
+              <div className="flex gap-3 px-4 hover:cursor-pointer" onClick={() => getNonProfitsList(5,1)}>
+                <SlRefresh/>
               </div>
             </div>
 

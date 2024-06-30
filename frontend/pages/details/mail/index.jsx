@@ -14,6 +14,7 @@ import foundationState from "../../../atom/foundationState";
 import userState from "@/atom/userState";
 import { formatDateTime, truncateText } from "@/utils";
 import ApiHelper from "@/helper/ApiHelper";
+import { SlRefresh } from "react-icons/sl";
 const CustomModal = dynamic(
   async () => await import("../../../components/CustomModal"),
   {
@@ -165,6 +166,15 @@ const Mail = () => {
                 <p className="font-bold  underline">
                   {userValue?.firstName + " " + userValue?.lastName}
                 </p>
+              </div>
+
+
+
+              <div> | </div>
+
+
+              <div className="flex gap-3 px-4 hover:cursor-pointer" onClick={() => getEmailsList(foundationValue?.foundationId, 5,1)}>
+                <SlRefresh/>
               </div>
             </div>
 
