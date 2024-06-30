@@ -26,6 +26,7 @@ const CustomModal = dynamic(
 const NonProfit = () => {
   const router = useRouter();
   const foundationValue = useRecoilValue(foundationState);
+  const [sendEmailText, setSendEmailText] = useState("Send Email");
   const userValue = useRecoilValue(userState);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -129,6 +130,11 @@ const NonProfit = () => {
       nonprofitIds: selectedNonProfitIds,
     });
     setIsSendEmailLoading(false);
+    setSendEmailText("Sent!");
+
+    setTimeout(() => {
+      setSendEmailText("Send Email");
+    }, 2000);
   };
 
 
@@ -173,7 +179,7 @@ const NonProfit = () => {
               <div> | </div>
 
               <div className="flex gap-3 px-4 ">
-                <Button className="px-10 min-w-[170px]" isLoading={isSendEmailLoading} onClick={() => sendEmails()} text="Send Emails">
+                <Button className="px-10 min-w-[170px]" isLoading={isSendEmailLoading} onClick={() => sendEmails()} text={sendEmailText}>
                   
                 </Button>
               </div>
@@ -187,7 +193,6 @@ const NonProfit = () => {
               onPageChange={(pagination, filters, sorter) => {
                 console.log(pagination, filters, sorter),
                   getNonProfitsList(
-                    foundationValue?.foundationId,
                     pagination?.pageSize,
                     pagination?.current
                   );

@@ -40,6 +40,7 @@ const CustomTable = ({
             current: current,
             pageSize: pageSize,
             total: total,
+            showSizeChanger: false,
           }}
           className={twMerge("", className)}
         />
@@ -53,6 +54,7 @@ const CustomTable = ({
             current: current,
             pageSize: pageSize,
             total: total,
+            showSizeChanger: false,
           }}
           className={twMerge("", className)}
         />
