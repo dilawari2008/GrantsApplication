@@ -24,6 +24,9 @@ public class NonProfit {
         this.template = template;
     }
 
+    public NonProfit() {
+    }
+
     public Long getId() {
         return id;
     }

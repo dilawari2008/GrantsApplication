@@ -11,6 +11,10 @@ import com.example.grantsmanagement.GrantsManagement.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -35,8 +39,9 @@ public class EmailService {
     @Autowired
     private FoundationService foundationService;
 
-    public ResponseEntity<List<Email>> getAllEmailsForSelectedNonProfits (Long foundationId) {
-        List<Email> emails = emailRepository.findAllEmailsByFoundationIdNonProfitIds(foundationId, new ArrayList<>());
+    public ResponseEntity<Page<Email>> getAllEmails (Long foundationId, int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("createdAt").descending());
+        Page<Email> emails = emailRepository.findAllEmailsByFoundationIdNonProfitIds(foundationId, pageable);
         return ResponseEntity.ok(emails);
     }
 

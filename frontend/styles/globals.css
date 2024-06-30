@@ -2,3 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  @apply font-thin bg-zinc-800 text-white;
+}
+
+input, button {
+  @apply text-black
+}
