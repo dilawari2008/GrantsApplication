@@ -5,6 +5,7 @@ import com.example.grantsmanagement.GrantsManagement.dto.EditTemplateDto;
 import com.example.grantsmanagement.GrantsManagement.models.NonProfit;
 import com.example.grantsmanagement.GrantsManagement.services.NonProfitService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -19,17 +20,18 @@ public class NonProfitController {
     private NonProfitService nonProfitService;
 
     @PostMapping("/")
-    public ResponseEntity<List<NonProfit>> createNonProfit (@RequestBody CreateNonProfitDto createNonProfitDto){
+    public ResponseEntity<Page<NonProfit>> createNonProfit (@RequestBody CreateNonProfitDto createNonProfitDto){
         return nonProfitService.createNonProfit(createNonProfitDto);
     }
 
     @PutMapping("/template")
-    public ResponseEntity<List<NonProfit>> updateTemplate (@RequestBody EditTemplateDto editTemplateDto){
+    public ResponseEntity<Page<NonProfit>> updateTemplate (@RequestBody EditTemplateDto editTemplateDto){
         return nonProfitService.updateTemplate(editTemplateDto);
     }
 
     @GetMapping("/{foundationId}")
-    public ResponseEntity<List<NonProfit>> getAllNonProfits (@PathVariable  Long foundationId) {
-        return nonProfitService.getAllNonProfits(foundationId);
+    public ResponseEntity<Page<NonProfit>> getAllNonProfits (@PathVariable  Long foundationId, @RequestParam(defaultValue = "1") int pageNumber,
+                                                             @RequestParam(defaultValue = "5") int pageSize) {
+        return nonProfitService.getAllNonProfits(foundationId, pageNumber, pageSize);
     }
 }

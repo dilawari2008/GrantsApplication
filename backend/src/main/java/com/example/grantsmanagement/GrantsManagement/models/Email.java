@@ -30,6 +30,9 @@ public class Email {
         this.mailStatus = mailStatus;
     }
 
+    public Email() {
+    }
+
     public Long getId() {
         return id;
     }

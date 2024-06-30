@@ -1,6 +1,5 @@
 package com.example.grantsmanagement.GrantsManagement.configurations;
 
-import com.example.grantsmanagement.GrantsManagement.services.FoundationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
