@@ -10,5 +10,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EmailRepository extends JpaRepository<Email, Long> {
     @Query("select e from Email e where e.foundationId = ?1")
-    Page<Email> findAllEmailsByFoundationIdNonProfitIds(Long foundationId, Pageable pageable);
+    Page<Email> findAllEmailsByFoundationId(Long foundationId, Pageable pageable);
+
+    @Query("select e from Email e where e.foundationId = ?1 and e.nonProfitId = ?2")
+    Page<Email> findAllEmailsByFoundationIdNonProfitId(Long foundationId, Long nonProfitId, Pageable pageable);
 }

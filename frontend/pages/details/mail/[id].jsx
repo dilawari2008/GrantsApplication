@@ -1,27 +1,30 @@
 "use client";
 import dynamic from "next/dynamic";
 const CustomTable = dynamic(
-  async () => await import("../../components/CustomTable"),
+  async () => await import("../../../components/CustomTable"),
   {
     ssr: false,
   }
 );
-import Navbar from "../../components/Navbar";
-import Spinner from "../../components/Spinner";
+import Navbar from "../../../components/Navbar";
+import Spinner from "../../../components/Spinner";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
-import foundationState from "../../atom/foundationState";
+import foundationState from "../../../atom/foundationState";
 import userState from "@/atom/userState";
 import { formatDateTime, truncateText } from "@/utils";
 import ApiHelper from "@/helper/ApiHelper";
+import { useRouter } from "next/router";
 const CustomModal = dynamic(
-  async () => await import("../../components/CustomModal"),
+  async () => await import("../../../components/CustomModal"),
   {
     ssr: false,
   }
 );
 
-const Mail = () => {
+const NonProfitMailListing = () => {
+  const router = useRouter();
+  const { id } = router.query;
   const foundationValue = useRecoilValue(foundationState);
   const userValue = useRecoilValue(userState);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,19 +32,20 @@ const Mail = () => {
   const [currentRecord, setCurrentRecord] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const getEmailsList = async (foundationId, pageSize, pageNumber) => {
+  const getEmailsList = async (pageSize, pageNumber) => {
     setIsLoading(true);
     const emails = await ApiHelper.getEmailsList(
-      foundationId,
+      foundationValue?.foundationId,
       pageSize,
-      pageNumber
+      pageNumber,
+      id
     );
     setData(emails);
     setIsLoading(false);
   };
 
   useEffect(() => {
-    getEmailsList(foundationValue?.foundationId, 5, 1);
+    getEmailsList(5, 1, id);
   }, []);
 
   console.log("data", data);
@@ -173,7 +177,7 @@ const Mail = () => {
               data={tableData}
               onPageChange={(pagination, filters, sorter) => {
                 console.log(pagination, filters, sorter);
-                getEmailsList(foundationValue?.foundationId, pagination?.pageSize, pagination?.current);
+                getEmailsList(pagination?.pageSize, pagination?.current);
               }}
               pageSize={5}
               total={data?.totalElements}
@@ -229,4 +233,4 @@ const ModalContent = ({
   );
 };
 
-export default Mail;
+export default NonProfitMailListing;

@@ -19,14 +19,14 @@ public class EmailController {
     private EmailService emailService;
 
     @GetMapping("/listing/{foundationId}")
-    public ResponseEntity<Page> getAllEmails (@PathVariable Long foundationId, @RequestParam(defaultValue = "1") int pageNumber,
-                                                     @RequestParam(defaultValue = "5") int pageSize) {
-        return emailService.getAllEmails(foundationId, pageNumber, pageSize);
+    public ResponseEntity<Page> getAllEmails (@PathVariable Long foundationId, @RequestParam(defaultValue = "1", required = false) int pageNumber,
+                                                     @RequestParam(defaultValue = "5", required = false) int pageSize, @RequestParam(required = false) Long nonProfitId) {
+        return emailService.getAllEmails(foundationId, pageNumber, pageSize, nonProfitId);
     }
 
     @PostMapping("/")
     public ResponseEntity sendMoneyToMultipleNonProfits (@RequestBody EmailDto emailDto) throws Exception {
-        emailService.sendMoneyToMultipleNonProfits(emailDto.getNonprofitIds(), emailDto.getFoundationId());
+        emailService.sendMoneyToMultipleNonProfitsV3(emailDto.getNonprofitIds(), emailDto.getFoundationId());
         return ResponseEntity.ok("Initated emails sending, view dashboard for details.");
     }
 }

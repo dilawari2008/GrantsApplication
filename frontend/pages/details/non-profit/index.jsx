@@ -58,6 +58,17 @@ const NonProfit = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      render: (_, record) => (
+        <p
+          className=" hover:cursor-pointer"
+          onClick={() => {
+            router.push(`/details/mail/${record?.id}`);
+            // Add any other logic you want to execute on name click here
+          }}
+        >
+          {record.name}
+        </p>
+      ),
     },
     {
       title: "Address",

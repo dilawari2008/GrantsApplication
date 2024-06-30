@@ -11,10 +11,10 @@ const getFoundationDetails = async (username) => {
   return response.data;
 };
 
-const getEmailsList = async (foundationId, pageSize, pageNumber) => {
+const getEmailsList = async (foundationId, pageSize, pageNumber, nonProfitId) => {
   const response = await axios({
     method: 'get',
-    url: `${API_URL}/app/emails/listing/${foundationId}?pageSize=${pageSize || 5}&pageNumber=${pageNumber || 1}`,
+    url: `${API_URL}/app/emails/listing/${foundationId}?pageSize=${pageSize || 5}&pageNumber=${pageNumber || 1}${nonProfitId ? `&nonProfitId=${nonProfitId ?? null}` : ``}`,
   });
 
   return response.data;
