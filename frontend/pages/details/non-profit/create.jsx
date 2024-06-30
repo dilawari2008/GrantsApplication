@@ -1,20 +1,22 @@
+import foundationState from "@/atom/foundationState";
 import Button from "@/components/Button";
 import LeftArrow from "@/components/LeftArrow";
 import Spinner from "@/components/Spinner";
 import ApiHelper from "@/helper/ApiHelper";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { useRecoilValue } from "recoil";
 
-const CreateFoundation = () => {
+const CreateNonProfit = () => {
   const router = useRouter();
+  const foundationValue = useRecoilValue(foundationState);
   const [isLoading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    username: "",
-    foundationName: "",
+    name: "",
+    address: "",
     email: "",
+    foundationId: foundationValue?.foundationId,
   });
 
   const handleChange = (e) => {
@@ -29,11 +31,11 @@ const CreateFoundation = () => {
     setLoading(true);
     e.preventDefault();
     console.log(formData);
-    await ApiHelper.createFoundation(formData);
+    await ApiHelper.createNonProfit(formData);
     setShowPopup(true);
     setLoading(false);
     setTimeout(() => {
-      router.push("/login");
+      router.push("/details/non-profit");
     }, 2000);
   };
 
@@ -45,58 +47,31 @@ const CreateFoundation = () => {
       >
         <div
           className="flex gap-1 text-xs hover:cursor-pointer"
-          onClick={() => router.push("/login")}
+          onClick={() => router.push("/details/non-profit")}
         >
           <LeftArrow className="size-4" />
-          <p>Login</p>
+          <p>Back</p>
         </div>
 
         <div className="w-full text-center font-bold text-2xl ">
-          User Details
+          Register Non Profit
         </div>
 
-        {/* user details */}
         <div className="flex flex-col gap-5 my-5">
           <input
-            name="firstName"
+            name="name"
             type="text"
-            value={formData.firstName}
+            value={formData.name}
             onChange={handleChange}
-            placeholder="First Name"
+            placeholder="Non Profit Name"
             className="px-4 py-2 outline-none rounded-lg text-black"
           ></input>
           <input
-            name="lastName"
+            name="address"
             type="text"
-            value={formData.lastName}
+            value={formData.address}
             onChange={handleChange}
-            placeholder="Last Name"
-            className="px-4 py-2 outline-none rounded-lg text-black"
-          ></input>
-          <input
-            name="username"
-            type="text"
-            value={formData.username}
-            onChange={handleChange}
-            placeholder="Username"
-            className="px-4 py-2 outline-none rounded-lg text-black"
-          ></input>
-        </div>
-
-        <br />
-
-        <div className="w-full text-center font-bold text-2xl ">
-          Foundation Details
-        </div>
-
-        {/* foundation details */}
-        <div className="flex flex-col gap-5 my-5">
-          <input
-            name="foundationName"
-            type="text"
-            value={formData.foundationName}
-            onChange={handleChange}
-            placeholder="Foundation Name"
+            placeholder="Address"
             className="px-4 py-2 outline-none rounded-lg text-black"
           ></input>
           <input
@@ -111,15 +86,15 @@ const CreateFoundation = () => {
 
         <br />
 
-        <Button className="font-semibold text-black" isLoading={isLoading} text="Create Foundation">
+        <Button className="font-semibold text-black" isLoading={isLoading} text="Create Non Profit">
         </Button>
       </form>
 
       {showPopup && (
-        <div className="absolute top-12 right-12 bg-green-600  text-white font-normal text-md py-4 px-8 flex gap-5 rounded-xl"><p> Saved! Redirecting to Login Page...</p><Spinner/></div>
+        <div className="absolute top-12 right-12 bg-green-600  text-white font-normal text-md py-4 px-8 flex gap-5 rounded-xl"><p> Non Profit Saved!</p><Spinner/></div>
       )}
     </div>
   );
 };
 
-export default CreateFoundation;
+export default CreateNonProfit;

@@ -6,7 +6,54 @@ const getFoundationDetails = async (username) => {
   const response = await axios({
     method: 'get',
     url: `${API_URL}/app/users/${username}`,
-    // Optional: Add headers, data, params as needed
+  });
+
+  return response.data;
+};
+
+const getEmailsList = async (foundationId, pageSize, pageNumber) => {
+  const response = await axios({
+    method: 'get',
+    url: `${API_URL}/app/emails/listing/${foundationId}?pageSize=${pageSize || 5}&pageNumber=${pageNumber || 1}`,
+  });
+
+  return response.data;
+};
+
+const getNonProfitsList = async (foundationId, pageSize, pageNumber) => {
+  const response = await axios({
+    method: 'get',
+    url: `${API_URL}/app/non-profits/${foundationId}?pageSize=${pageSize || 5}&pageNumber=${pageNumber || 1}`,
+  });
+
+  return response.data;
+};
+
+const createFoundation = async (data) => {
+  const response = await axios({
+    method: 'post',
+    url: `${API_URL}/app/foundations/`,
+    data,
+  });
+
+  return response.data;
+};
+
+const createNonProfit = async (data) => {
+  const response = await axios({
+    method: 'post',
+    url: `${API_URL}/app/non-profits/`,
+    data,
+  });
+
+  return response.data;
+};
+
+const updateTemplate = async (data) => {
+  const response = await axios({
+    method: 'put',
+    url: `${API_URL}/app/non-profits/template`,
+    data,
   });
 
   return response.data;
@@ -14,6 +61,11 @@ const getFoundationDetails = async (username) => {
 
 const ApiHelper = {
   getFoundationDetails,
+  getEmailsList,
+  getNonProfitsList,
+  createFoundation,
+  createNonProfit,
+  updateTemplate,
 };
 
 export default ApiHelper;

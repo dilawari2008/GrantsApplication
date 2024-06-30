@@ -10,20 +10,22 @@ const CustomTable = ({
   total,
   className,
   checkboxDisabled,
+  currentPage,
+  setSelectedNonProfitIds,
+  selectedNonProfitIds,
 }) => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [current, setCurrent] = useState(1);
+  const [current, setCurrent] = useState(currentPage || 1);
   const onSelectChange = (newSelectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
-    setSelectedRowKeys(newSelectedRowKeys);
+    console.log("selectedNonProfitIds changed: ", newSelectedRowKeys);
+    setSelectedNonProfitIds(newSelectedRowKeys);
   };
   const rowSelection = {
-    selectedRowKeys,
+    selectedNonProfitIds,
     onChange: onSelectChange,
   };
 
   const handleTableChange = (pagination) => {
-    setCurrent(pagination.current);
+    setCurrent(pagination?.current);
     onPageChange(pagination);
   };
 

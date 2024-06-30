@@ -18,25 +18,33 @@ const Login = () => {
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const signIn = async () => {
-    setSubmitLoading(true)
+    setSubmitLoading(true);
     const data = await ApiHelper.getFoundationDetails(username);
-    console.log('data', data);
+    console.log("data", data);
     if (data) {
       setFoundationState({
-        foundationId: data,
+        foundationId: data?.foundationId,
+        foundationName: data?.foundationName,
+        foundationEmail: data?.foundationEmail,
+      });
+
+      setUserState({
+        firstName: data?.firstName,
+        lastName: data?.lastName,
+        username: data?.username,
+        userId: data?.userId,
       });
     }
 
     setSubmitLoading(false);
-    router.push('/details/non-profit');
+    router.push("/details/non-profit");
   };
-  
 
   return (
     <div className="w-[100vw] h-[100vh] flex flex-col items-center justify-center">
       <div className="flex flex-col w-auto h-auto p-10 rounded-lg bg-primary  gap-4">
         <div className="flex h-6 mb-4 justify-center items-center">
-          <Image src={TemelioWhite} alt="temelio-logo"/>
+          <Image src={TemelioWhite} alt="temelio-logo" />
         </div>
 
         <div className="flex m-2 gap-2 ">
@@ -63,7 +71,11 @@ const Login = () => {
           <div className="w-32 h-[0.5px] bg-white"></div>
         </div>
 
-        <Button text="Create Foundation" isLoading={false} onClick={() => router.push('/foundation')}/>
+        <Button
+          text="Create Foundation"
+          isLoading={false}
+          onClick={() => router.push("/foundation")}
+        />
       </div>
     </div>
   );

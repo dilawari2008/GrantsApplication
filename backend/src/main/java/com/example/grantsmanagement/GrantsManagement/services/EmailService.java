@@ -1,6 +1,5 @@
 package com.example.grantsmanagement.GrantsManagement.services;
 
-import com.example.grantsmanagement.GrantsManagement.dto.GetEmailsDto;
 import com.example.grantsmanagement.GrantsManagement.dto.TemplateVariablesDto;
 import com.example.grantsmanagement.GrantsManagement.enums.MailStatus;
 import com.example.grantsmanagement.GrantsManagement.models.Email;
@@ -16,10 +15,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -39,9 +36,10 @@ public class EmailService {
     @Autowired
     private FoundationService foundationService;
 
-    public ResponseEntity<Page<Email>> getAllEmails (Long foundationId, int pageNumber, int pageSize) {
+    public ResponseEntity<Page> getAllEmails (Long foundationId, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("createdAt").descending());
-        Page<Email> emails = emailRepository.findAllEmailsByFoundationIdNonProfitIds(foundationId, pageable);
+        Page emails = emailRepository.findAllEmailsByFoundationIdNonProfitIds(foundationId, pageable);
+        log.info(emails.toString());
         return ResponseEntity.ok(emails);
     }
 

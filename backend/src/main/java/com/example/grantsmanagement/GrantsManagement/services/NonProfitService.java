@@ -41,6 +41,6 @@ public class NonProfitService {
 
     public ResponseEntity<Page<NonProfit>> updateTemplate(EditTemplateDto editTemplateDto) {
         nonProfitRepository.updateTemplate(editTemplateDto.getNonProfitId(), editTemplateDto.getTemplate());
-        return getAllNonProfits(editTemplateDto.getFoundationId(), 1, 5);
+        return getAllNonProfits(editTemplateDto.getNonProfitId(), 1, 5);
     }
 }

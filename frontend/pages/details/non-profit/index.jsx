@@ -1,36 +1,56 @@
 "use client";
 import dynamic from "next/dynamic";
 const CustomTable = dynamic(
-  async () => await import("../../components/CustomTable"),
+  async () => await import("../../../components/CustomTable"),
   {
     ssr: false,
   }
 );
-import Navbar from "../../components/Navbar";
-import useNonProfits from "../../hooks/useNonProfits";
-import Spinner from "../../components/Spinner";
-import { useState } from "react";
-import Button from "../../components/Button";
+import Navbar from "../../../components/Navbar";
+import Spinner from "../../../components/Spinner";
+import { useEffect, useState } from "react";
+import Button from "../../../components/Button";
 import { useRecoilValue } from "recoil";
-import foundationState from "../../atom/foundationState";
+import foundationState from "../../../atom/foundationState";
 import userState from "@/atom/userState";
 import { formatDateTime } from "@/utils";
+import ApiHelper from "@/helper/ApiHelper";
+import { useRouter } from "next/router";
 const CustomModal = dynamic(
-  async () => await import("../../components/CustomModal"),
+  async () => await import("../../../components/CustomModal"),
   {
     ssr: false,
   }
 );
 
 const NonProfit = () => {
+  const router = useRouter();
   const foundationValue = useRecoilValue(foundationState);
   const userValue = useRecoilValue(userState);
-  const { data, error, isLoading } = useNonProfits();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState(null);
   const [currentRecord, setCurrentRecord] = useState(null);
+  const [selectedNonProfitIds, setSelectedNonProfitIds] = useState([]);
   const [isSendEmailLoading, setIsSendEmailLoading] = useState(false);
   const [isCreateNonProfitLoading, setIsCreateNonProfitLoading] =
     useState(false);
+
+  const getNonProfitsList = async (pageSize, pageNumber) => {
+    setIsLoading(true);
+    const emails = await ApiHelper.getNonProfitsList(
+      foundationValue?.foundationId,
+      pageSize,
+      pageNumber
+    );
+    setData(emails);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    getNonProfitsList(5, 1);
+  }, []);
+
   console.log("data", data);
   console.log("isLoading", isLoading);
   const columns = [
@@ -72,10 +92,11 @@ const NonProfit = () => {
     },
   ];
   const tableData = [];
-  for (let idx = 0; idx < data?.length; idx++) {
-    const item = data[idx];
+  for (let idx = 0; idx < data?.content?.length; idx++) {
+    const item = data?.content?.[idx];
     tableData.push({
-      key: idx,
+      id: item.id,
+      key: item.id,
       name: item.name,
       address: item.address,
       email: item.email,
@@ -99,7 +120,7 @@ const NonProfit = () => {
               <div className="flex gap-3  px-4 ">
                 <p>Foundation Name</p>
                 <p>-</p>
-                <p className="font-bold text-primary underline">
+                <p className="font-bold  underline underline-offset-2">
                   {foundationValue?.foundationName}
                 </p>
               </div>
@@ -109,13 +130,19 @@ const NonProfit = () => {
               <div className="flex gap-3  px-4 ">
                 <p>User Name</p>
                 <p>-</p>
-                <p className="font-bold text-primary underline">{userValue?.userName}</p>
+                <p className="font-bold  underline underline-offset-2">
+                  {userValue?.firstName + " " + userValue?.lastName}
+                </p>
               </div>
 
               <div> | </div>
 
               <div className="flex gap-3 px-4 ">
-                <Button className="px-10" isLoading={isCreateNonProfitLoading}>
+                <Button
+                  className="px-10"
+                  isLoading={isCreateNonProfitLoading}
+                  onClick={() => router.push("/details/non-profit/create")}
+                >
                   Add Non Profit
                 </Button>
               </div>
@@ -123,7 +150,7 @@ const NonProfit = () => {
               <div> | </div>
 
               <div className="flex gap-3 px-4 ">
-                <Button className="px-10" isLoading={isSendEmailLoading}>
+                <Button className="px-10" isLoading={isSendEmailLoading} onClick={() => {}}>
                   Send Emails
                 </Button>
               </div>
@@ -132,11 +159,19 @@ const NonProfit = () => {
             <CustomTable
               columns={columns}
               data={tableData}
-              onPageChange={(pagination, filters, sorter) =>
-                console.log(pagination, filters, sorter)
-              }
+              setSelectedNonProfitIds={setSelectedNonProfitIds}
+              selectedNonProfitIds={selectedNonProfitIds}
+              onPageChange={(pagination, filters, sorter) => {
+                console.log(pagination, filters, sorter),
+                  getNonProfitsList(
+                    foundationValue?.foundationId,
+                    pagination?.pageSize,
+                    pagination?.current
+                  );
+              }}
               pageSize={5}
-              total={data?.length}
+              total={data?.totalElements}
+              currentPage={(data?.number || 0) + 1}
               className="min-h-[410px] min-w-[90vw] mt-20 p-2 bg-zinc-100"
             />
 
@@ -146,31 +181,62 @@ const NonProfit = () => {
               onCancel={() => onModalClose()}
             >
               <ModalContent
-                templateText={data?.template}
+                templateText={currentRecord?.templateText}
                 onModalClose={onModalClose}
+                foundationId={foundationValue?.foundationId}
+                nonProfitId={currentRecord?.id}
+                getNonProfitsList={getNonProfitsList}
+                x={console.log('currentRecord',currentRecord)}
               />
             </CustomModal>
           </div>
         </div>
       ) : (
         <div className="flex items-center justify-center w-[100vw] h-[100vh] overflow-hidden">
-          <Spinner variant="secondary" size="large" />
+          <Spinner variant="primary" size="large" />
         </div>
       )}
     </>
   );
 };
 
-const ModalContent = ({ templateText, onModalClose, ...props }) => {
-  const [template, setTemplate] = useState(templateText);
+const ModalContent = ({
+  templateText,
+  onModalClose,
+  updateTemplate,
+  getNonProfitsList,
+  foundationId,
+  nonProfitId,
+  ...props
+}) => {
+  console.log("saveTemplate called", templateText);
+  const [template, setTemplate] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const saveTemplate = () => {
+  const saveTemplate = async () => {
     setIsLoading(true);
     console.log("saveTemplate called", template);
-    //api
+    await ApiHelper.updateTemplate({
+      foundationId,
+      nonProfitId,
+      template,
+    });
+    setTemplate(null);
     onModalClose();
     setIsLoading(false);
+    getNonProfitsList(5, 1);
   };
+
+  useEffect(() => {
+    setTemplate(templateText);
+    console.log('template',template);
+    return () => {
+      console.log("ModalContent component unmounted");
+      setTemplate(null);
+    };
+  }, [templateText]);
+  
+  
+  
   return (
     <div className="flex flex-col gap-4">
       <p>
@@ -182,11 +248,10 @@ const ModalContent = ({ templateText, onModalClose, ...props }) => {
       <textarea
         placeholder="Create email template"
         className="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md resize-none h-20 overflow-y-auto"
-        value={template}
+        value={template || ''}
         onChange={(e) => {
           setTemplate(e.target.value);
         }}
-        {...props}
       ></textarea>
       <Button
         className=""

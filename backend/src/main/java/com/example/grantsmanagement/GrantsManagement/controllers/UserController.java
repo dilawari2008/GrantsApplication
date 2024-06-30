@@ -18,6 +18,6 @@ public class UserController {
 
     @GetMapping("/users/{username}")
     public ResponseEntity<FoundationDetailsDto> getFoundationIdByUsername(@PathVariable String username){
-        return userService.getFoundationIdByUsername(username);
+        return userService.getFoundationDetailsByUsername(username);
     }
 }

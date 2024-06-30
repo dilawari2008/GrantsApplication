@@ -8,12 +8,12 @@ const CustomTable = dynamic(
 );
 import Navbar from "../../components/Navbar";
 import Spinner from "../../components/Spinner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import foundationState from "../../atom/foundationState";
 import userState from "@/atom/userState";
 import { formatDateTime, truncateText } from "@/utils";
-import useEmails from "@/hooks/useEmails";
+import ApiHelper from "@/helper/ApiHelper";
 const CustomModal = dynamic(
   async () => await import("../../components/CustomModal"),
   {
@@ -24,9 +24,26 @@ const CustomModal = dynamic(
 const Mail = () => {
   const foundationValue = useRecoilValue(foundationState);
   const userValue = useRecoilValue(userState);
-  const { data, error, isLoading } = useEmails();
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState(null);
   const [currentRecord, setCurrentRecord] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const getEmailsList = async (foundationId, pageSize, pageNumber) => {
+    setIsLoading(true);
+    const emails = await ApiHelper.getEmailsList(
+      foundationId,
+      pageSize,
+      pageNumber
+    );
+    setData(emails);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    getEmailsList(foundationValue?.foundationId, 5, 1);
+  }, []);
+
   console.log("data", data);
   const columns = [
     {
@@ -34,11 +51,11 @@ const Mail = () => {
       dataIndex: "id",
       key: "id",
     },
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-    },
+    // {
+    //   title: "Name",
+    //   dataIndex: "name",
+    //   key: "name",
+    // },
     // {
     //   title: "Non Profit Email",
     //   dataIndex: "nonProfitEmail",
@@ -88,18 +105,24 @@ const Mail = () => {
       key: "mailStatus",
       render: (_, record) => (
         <>
-        {
-          record?.mailStatus === 'SUCCESS' ? <p className="text-green-800 font-semibold">{record?.mailStatus}</p> : 
-          record?.mailStatus === 'QUEUED' ? <p className="text-yellow-500 font-semibold">{record?.mailStatus}</p> : 
-          record?.mailStatus === 'FAILED' ? <p className="text-red-600 font-semibold">{record?.mailStatus}</p> : '-'
-        }
+          {record?.mailStatus === "SUCCESS" ? (
+            <p className="text-green-800 font-semibold">{record?.mailStatus}</p>
+          ) : record?.mailStatus === "QUEUED" ? (
+            <p className="text-yellow-500 font-semibold">
+              {record?.mailStatus}
+            </p>
+          ) : record?.mailStatus === "FAILED" ? (
+            <p className="text-red-600 font-semibold">{record?.mailStatus}</p>
+          ) : (
+            "-"
+          )}
         </>
       ),
     },
   ];
   const tableData = [];
-  for (let idx = 0; idx < data?.length; idx++) {
-    const item = data[idx];
+  for (let idx = 0; idx < data?.content?.length; idx++) {
+    const item = data?.content?.[idx];
     tableData.push({
       key: idx,
       name: item.name,
@@ -129,7 +152,7 @@ const Mail = () => {
               <div className="flex gap-3  px-4 ">
                 <p>Foundation Name</p>
                 <p>-</p>
-                <p className="font-bold text-primary underline">
+                <p className="font-bold  underline">
                   {foundationValue?.foundationName}
                 </p>
               </div>
@@ -139,26 +162,27 @@ const Mail = () => {
               <div className="flex gap-3  px-4 ">
                 <p>User Name</p>
                 <p>-</p>
-                <p className="font-bold text-primary underline">{userValue?.userName}</p>
+                <p className="font-bold  underline">
+                  {userValue?.firstName + " " + userValue?.lastName}
+                </p>
               </div>
             </div>
 
             <CustomTable
               columns={columns}
               data={tableData}
-              onPageChange={(pagination, filters, sorter) =>
-                console.log(pagination, filters, sorter)
-              }
+              onPageChange={(pagination, filters, sorter) => {
+                console.log(pagination, filters, sorter);
+                getEmailsList(foundationValue?.foundationId, pagination?.pageSize, pagination?.current);
+              }}
               pageSize={5}
-              total={data?.length}
+              total={data?.totalElements}
               className="min-h-[410px] min-w-[90vw] mt-20 p-2 bg-zinc-100"
               checkboxDisabled={true}
+              currentPage={(data?.number || 0) + 1}
             />
 
-            <CustomModal
-              isOpen={isModalOpen}
-              onCancel={() => onModalClose()}
-            >
+            <CustomModal isOpen={isModalOpen} onCancel={() => onModalClose()}>
               <ModalContent
                 body={currentRecord?.body}
                 subject={currentRecord?.subject}
@@ -172,19 +196,33 @@ const Mail = () => {
         </div>
       ) : (
         <div className="flex items-center justify-center w-[100vw] h-[100vh] overflow-hidden">
-          <Spinner variant="secondary" size="large" />
+          <Spinner variant="primary" size="large" />
         </div>
       )}
     </>
   );
 };
 
-const ModalContent = ({ body, subject, createdAt, from, to, onModalClose, ...props }) => {
+const ModalContent = ({
+  body,
+  subject,
+  createdAt,
+  from,
+  to,
+  onModalClose,
+  ...props
+}) => {
   return (
     <div className="flex flex-col gap-4">
       <p className="font-semibold text-2xl">{subject}</p>
-      <div className="flex gap-3"><p>From -</p><p>{from}</p></div>
-      <div className="flex gap-3"><p>To -</p><p>{to}</p></div>
+      <div className="flex gap-3">
+        <p>From -</p>
+        <p>{from}</p>
+      </div>
+      <div className="flex gap-3">
+        <p>To -</p>
+        <p>{to}</p>
+      </div>
       <p className="">{createdAt}</p>
       <p className="">{body}</p>
     </div>

@@ -19,7 +19,7 @@ public class EmailController {
     private EmailService emailService;
 
     @GetMapping("/listing/{foundationId}")
-    public ResponseEntity<Page<Email>> getAllEmails (@PathVariable Long foundationId, @RequestParam(defaultValue = "1") int pageNumber,
+    public ResponseEntity<Page> getAllEmails (@PathVariable Long foundationId, @RequestParam(defaultValue = "1") int pageNumber,
                                                      @RequestParam(defaultValue = "5") int pageSize) {
         return emailService.getAllEmails(foundationId, pageNumber, pageSize);
     }

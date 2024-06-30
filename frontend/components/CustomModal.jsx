@@ -10,6 +10,7 @@ const CustomModal = ({ heading, description, isOpen, onCancel, children, classNa
         onCancel={() => onCancel()}
         footer={null}
         className={className}
+        {...props}
       >
         {children}
       </Modal>
