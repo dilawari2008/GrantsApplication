@@ -27,16 +27,19 @@ const CustomModal = dynamic(
 const NonProfit = () => {
   const router = useRouter();
   const foundationValue = useRecoilValue(foundationState);
-  const [sendEmailText, setSendEmailText] = useState("Send Email");
+  const [isEmailSent, setIsEmailSent] = useState(false);
   const userValue = useRecoilValue(userState);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState(null);
+  const [isMailingOptionModalOpen, setIsMailingOptionModalOpen] =
+    useState(false);
   const [currentRecord, setCurrentRecord] = useState(null);
   const [selectedNonProfitIds, setSelectedNonProfitIds] = useState([]);
   const [isSendEmailLoading, setIsSendEmailLoading] = useState(false);
   const [isCreateNonProfitLoading, setIsCreateNonProfitLoading] =
     useState(false);
+  const [mailingModalStep, setMailingModalStep] = useState(0);
 
   const getNonProfitsList = async (pageSize, pageNumber) => {
     setIsLoading(true);
@@ -123,21 +126,41 @@ const NonProfit = () => {
     setCurrentRecord(null);
   };
 
+  const onMailingModalClose = () => {
+    setIsMailingOptionModalOpen(false);
+    setMailingModalStep(0);
+  };
+
   const sendEmails = async () => {
     setIsSendEmailLoading(true);
-    console.log('selectedNonProfitIds',selectedNonProfitIds)
+    console.log("selectedNonProfitIds", selectedNonProfitIds);
     await ApiHelper.sendEmails({
       foundationId: foundationValue?.foundationId,
       nonprofitIds: selectedNonProfitIds,
     });
     setIsSendEmailLoading(false);
-    setSendEmailText("Sent!");
+    setIsEmailSent(true);
 
     setTimeout(() => {
-      setSendEmailText("Send Email");
+      setIsEmailSent(false);
     }, 2000);
   };
 
+  const sendCustomEmail = async (customTemplate) => {
+    setIsSendEmailLoading(true);
+    onMailingModalClose();
+    // api call
+    await ApiHelper.sendCustomEmail({
+      foundationId: foundationValue?.foundationId,
+      nonprofitIds: selectedNonProfitIds,
+      customTemplate,
+    });
+    setIsSendEmailLoading(false);
+    setIsEmailSent(true);
+    setTimeout(() => {
+      setIsEmailSent(false);
+    }, 2000);
+  };
 
   return (
     <>
@@ -180,15 +203,26 @@ const NonProfit = () => {
               <div> | </div>
 
               <div className="flex gap-3 px-4 ">
-                <Button className="px-10 min-w-[170px]" isLoading={isSendEmailLoading} onClick={() => sendEmails()} text={sendEmailText}>
-                  
-                </Button>
+                <Button
+                  isLoading={isSendEmailLoading}
+                  onClick={() => {
+                    setMailingModalStep(1);
+                    setIsMailingOptionModalOpen(true);
+                  }}
+                  text={isEmailSent ? "Sent!" : "Send Email"}
+                  className={`px-10 min-w-[170px] ${
+                    isEmailSent && "text-green-700 bg-transparent text-xl"
+                  }`}
+                ></Button>
               </div>
 
               <div> | </div>
 
-              <div className="flex gap-3 px-4 hover:cursor-pointer" onClick={() => getNonProfitsList(5,1)}>
-                <SlRefresh/>
+              <div
+                className="flex gap-3 px-4 hover:cursor-pointer"
+                onClick={() => getNonProfitsList(5, 1)}
+              >
+                <SlRefresh />
               </div>
             </div>
 
@@ -199,10 +233,7 @@ const NonProfit = () => {
               selectedNonProfitIds={selectedNonProfitIds}
               onPageChange={(pagination, filters, sorter) => {
                 console.log(pagination, filters, sorter),
-                  getNonProfitsList(
-                    pagination?.pageSize,
-                    pagination?.current
-                  );
+                  getNonProfitsList(pagination?.pageSize, pagination?.current);
               }}
               pageSize={5}
               total={data?.totalElements}
@@ -221,8 +252,33 @@ const NonProfit = () => {
                 foundationId={foundationValue?.foundationId}
                 nonProfitId={currentRecord?.id}
                 getNonProfitsList={getNonProfitsList}
-                x={console.log('currentRecord',currentRecord)}
+                x={console.log("currentRecord", currentRecord)}
               />
+            </CustomModal>
+
+            <CustomModal
+              heading={
+                mailingModalStep === 1
+                  ? `Choose Mailing Body Option`
+                  : `Draft A New Mail`
+              }
+              isOpen={isMailingOptionModalOpen}
+              onCancel={() => onMailingModalClose()}
+            >
+              {mailingModalStep === 1 && (
+                <MailingModalContent
+                  personalisedMails={sendEmails}
+                  setIsMailingOptionModalOpen={setIsMailingOptionModalOpen}
+                  setMailingModalStep={setMailingModalStep}
+                />
+              )}
+
+              {mailingModalStep === 2 && (
+                <DraftMail
+                  setIsMailingOptionModalOpen={setIsMailingOptionModalOpen}
+                  sendCustomEmail={sendCustomEmail}
+                />
+              )}
             </CustomModal>
           </div>
         </div>
@@ -232,6 +288,60 @@ const NonProfit = () => {
         </div>
       )}
     </>
+  );
+};
+
+const DraftMail = ({ sendCustomEmail }) => {
+  const [template, setTemplate] = useState(
+    "{foundation_name} is sending money to nonprofit {name} at address {address}. Good Job!!"
+  );
+  return (
+    <div className="flex flex-col gap-4">
+      <p>
+        Variables available are <span className="font-bold">name</span>,{" "}
+        <span className="font-bold">address</span>,{" "}
+        <span className="font-bold">email</span> and{" "}
+        <span className="font-bold">foundation_name</span>.
+      </p>
+      <textarea
+        placeholder="Create email template"
+        className="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md resize-none h-20 overflow-y-auto"
+        value={template || ""}
+        onChange={(e) => {
+          setTemplate(e.target.value);
+        }}
+      ></textarea>
+      <Button
+        className=""
+        isLoading={false}
+        text="Send Mail To All Selected Non Profits"
+        onClick={() => {
+          sendCustomEmail(template);
+        }}
+      ></Button>
+    </div>
+  );
+};
+
+const MailingModalContent = ({
+  personalisedMails,
+  setIsMailingOptionModalOpen,
+  setMailingModalStep,
+}) => {
+  const sendPersonlisedMail = () => {
+    personalisedMails();
+    setIsMailingOptionModalOpen(false);
+  };
+
+  return (
+    <div className="flex flex-col justify-center items-center min-w-[472px] gap-4 px-10 py-4">
+      <Button className="w-[472px]" onClick={() => setMailingModalStep(2)}>
+        Draft a common mail for all
+      </Button>
+      <Button className="w-[472px]" onClick={() => sendPersonlisedMail()}>
+        Use Personalised Templates for each
+      </Button>
+    </div>
   );
 };
 
@@ -263,15 +373,13 @@ const ModalContent = ({
 
   useEffect(() => {
     setTemplate(templateText);
-    console.log('template',template);
+    console.log("template", template);
     return () => {
       console.log("ModalContent component unmounted");
       setTemplate(null);
     };
   }, [templateText]);
-  
-  
-  
+
   return (
     <div className="flex flex-col gap-4">
       <p>
@@ -283,7 +391,7 @@ const ModalContent = ({
       <textarea
         placeholder="Create email template"
         className="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md resize-none h-20 overflow-y-auto"
-        value={template || ''}
+        value={template || ""}
         onChange={(e) => {
           setTemplate(e.target.value);
         }}

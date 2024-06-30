@@ -53,7 +53,7 @@ public class EmailService {
         return ResponseEntity.ok(emails);
     }
 
-    public void sendMoneyToMultipleNonProfitsV3(List<Long> nonProfitIds, Long foundationId) throws Exception {
+    public void sendMailToMultipleNonProfits(List<Long> nonProfitIds, Long foundationId, String customTemplate) throws Exception {
 
         if (nonProfitIds != null && nonProfitIds.size() > MAX_BATCH_SIZE) {
             throw new Exception(String.format("Max Batch Size is %s", MAX_BATCH_SIZE));
@@ -64,9 +64,10 @@ public class EmailService {
 
         List<Email> emails = new ArrayList<>();
         for (NonProfit nonProfit : nonProfits) {
+            String template = customTemplate != null ? customTemplate : nonProfit.getTemplate();
             TemplateVariablesDto templateVariablesDto = new TemplateVariablesDto(nonProfit.getName(),nonProfit.getAddress(),nonProfit.getEmail(), foundation.getName());
             Email email = new Email();
-            email.setBody(String.format(StringUtils.populateTemplates(nonProfit.getTemplate(), templateVariablesDto)));
+            email.setBody(String.format(StringUtils.populateTemplates(template, templateVariablesDto)));
             email.setSubject(String.format("Sending Money to %s", nonProfit.getName()));
             email.setFoundationId(foundationId);
             email.setFoundationEmail(foundation.getEmail());

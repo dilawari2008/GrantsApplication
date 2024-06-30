@@ -5,6 +5,7 @@ import java.util.List;
 public class EmailDto {
     private Long foundationId;
     private List<Long> nonprofitIds;
+    private String customTemplate;
 
     public Long getFoundationId() {
         return foundationId;
@@ -20,5 +21,13 @@ public class EmailDto {
 
     public void setNonprofitIds(List<Long> nonprofitIds) {
         this.nonprofitIds = nonprofitIds;
+    }
+
+    public String getCustomTemplate() {
+        return customTemplate;
+    }
+
+    public void setCustomTemplate(String customTemplate) {
+        this.customTemplate = customTemplate;
     }
 }

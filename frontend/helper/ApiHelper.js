@@ -69,6 +69,16 @@ const sendEmails = async (data) => {
   return response.data;
 };
 
+const sendCustomEmail = async (data) => {
+  const response = await axios({
+    method: 'post',
+    url: `${API_URL}/app/emails/custom`,
+    data,
+  });
+
+  return response.data;
+};
+
 const ApiHelper = {
   getFoundationDetails,
   getEmailsList,
@@ -77,6 +87,7 @@ const ApiHelper = {
   createNonProfit,
   updateTemplate,
   sendEmails,
+  sendCustomEmail,
 };
 
 export default ApiHelper;
