@@ -4,5 +4,5 @@
 
 ### Tech Stack
 
-NextJs, Springboot, Recoil, Supabase
+NextJs, Springboot, Recoil
 
