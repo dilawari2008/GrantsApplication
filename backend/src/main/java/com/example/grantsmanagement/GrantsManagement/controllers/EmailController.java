@@ -25,8 +25,14 @@ public class EmailController {
     }
 
     @PostMapping("/")
-    public ResponseEntity sendMoneyToMultipleNonProfits (@RequestBody EmailDto emailDto) throws Exception {
-        emailService.sendMoneyToMultipleNonProfitsV3(emailDto.getNonprofitIds(), emailDto.getFoundationId());
+    public ResponseEntity sendMailToMultipleNonProfits (@RequestBody EmailDto emailDto) throws Exception {
+        emailService.sendMailToMultipleNonProfits(emailDto.getNonprofitIds(), emailDto.getFoundationId(), null);
+        return ResponseEntity.ok("Initated emails sending, view dashboard for details.");
+    }
+
+    @PostMapping("/custom")
+    public ResponseEntity sendCustomMailWithCustomBody (@RequestBody EmailDto emailDto) throws Exception {
+        emailService.sendMailToMultipleNonProfits(emailDto.getNonprofitIds(), emailDto.getFoundationId(), emailDto.getCustomTemplate());
         return ResponseEntity.ok("Initated emails sending, view dashboard for details.");
     }
 }
